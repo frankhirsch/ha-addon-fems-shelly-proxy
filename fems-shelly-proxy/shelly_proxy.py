@@ -65,6 +65,7 @@ def load_config() -> dict:
                 "name": d["name"],
                 "ip": d.get("ip", "0.0.0.0"),
                 "port": 80,
+                "invert": d.get("invert", False),
                 "entities": {
                     "power": d.get("entity_power", ""),
                     "voltage": d.get("entity_voltage", ""),
@@ -165,6 +166,7 @@ class VirtualShellyPlugS:
         self.ip = device_cfg.get("ip", "0.0.0.0")
         self.port = device_cfg.get("port", 80)
         self.entities = device_cfg["entities"]
+        self.invert = device_cfg.get("invert", False)
         self.ha = ha_client
 
         # Generate a stable fake MAC from the device name
@@ -173,7 +175,13 @@ class VirtualShellyPlugS:
         self.device_id = f"shellyplugsg3-{h.lower()}"
 
     async def _read_sensors(self) -> dict:
-        """Read current values from HA."""
+        """Read current values from HA.
+
+        If 'invert' is enabled, apower and current are negated — matching
+        the behaviour of a real Shelly Plug S Gen3 that reports negative
+        apower when energy flows back (e.g. solar production).
+        Voltage and energy are never inverted (same as OpenEMS/FEMS).
+        """
         power = await self.ha.get_state(self.entities.get("power", "")) or 0.0
         voltage = await self.ha.get_state(self.entities.get("voltage", "")) or 230.0
         current = await self.ha.get_state(self.entities.get("current", "")) or 0.0
@@ -181,6 +189,12 @@ class VirtualShellyPlugS:
         # Energy: HA liefert kWh kumuliert, Shelly erwartet Wh
         energy_kwh = await self.ha.get_state(self.entities.get("energy", ""))
         energy_wh = (energy_kwh * 1000.0) if energy_kwh is not None else 0.0
+
+        # Invert power + current (not voltage/energy) to match real
+        # Shelly Gen3 sign convention: negative = generation
+        if self.invert:
+            power = -power
+            current = -current
 
         return {
             "apower": round(power, 1),

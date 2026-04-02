@@ -21,3 +21,6 @@ configuration:
       entity_energy:
         name: "Energie (Entity-ID)"
         description: "HA Entity-ID für den kumulierten Energieverbrauch in kWh"
+      invert:
+        name: "Werte invertieren"
+        description: "Leistung und Strom negieren (für Erzeuger wie Balkonkraftwerke, deren HA-Sensor positive Werte liefert)"

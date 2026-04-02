@@ -79,7 +79,29 @@ devices:
     entity_voltage: sensor.shellypmminig3_YYYY_voltage
     entity_current: sensor.shellypmminig3_YYYY_current
     entity_energy: sensor.shellypmminig3_YYYY_energy
+  - name: Balcony PV
+    ip: "192.168.178.12"
+    entity_power: sensor.balcony_pv_power
+    entity_voltage: sensor.balcony_pv_voltage
+    entity_current: sensor.balcony_pv_current
+    entity_energy: sensor.balcony_pv_energy
+    invert: true
 ```
+
+### Invert option (for production meters)
+
+A real Shelly Plug S Gen3 reports **negative** `apower` when energy flows back
+to the grid (e.g. solar production). If your HA sensor reports production as
+**positive** values (which is common for solar inverters like Hoymiles), enable
+`invert: true` to negate `apower` and `current`. This makes the proxy behave
+like a real Shelly Gen3 measuring a producing device.
+
+- **`invert: false`** (default) — for consumers (washer, dryer, heat pump)
+- **`invert: true`** — for producers whose HA sensor reports positive power
+  (balcony PV, solar inverter)
+
+Note: `voltage` and `energy` are never inverted — matching the real Shelly and
+OpenEMS/FEMS behaviour.
 
 Click **Save** after entering your devices.
 

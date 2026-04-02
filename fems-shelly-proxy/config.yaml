@@ -20,6 +20,7 @@ options:
       entity_voltage: "sensor.shelly_voltage"
       entity_current: "sensor.shelly_current"
       entity_energy: "sensor.shelly_energy"
+      invert: false
 schema:
   devices:
     - name: str
@@ -28,5 +29,6 @@ schema:
       entity_voltage: str
       entity_current: str
       entity_energy: str
+      invert: "bool?"
 startup: application
 boot: auto
