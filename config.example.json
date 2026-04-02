@@ -1,0 +1,40 @@
+{
+  "_comment": [
+    "Shelly-FEMS-Proxy Konfiguration (Standalone-Modus)",
+    "Jedes Gerät in 'devices' erzeugt einen virtuellen Shelly Plug S Gen3.",
+    "Im Add-On-Modus wird stattdessen /data/options.json verwendet.",
+    "",
+    "ip:   Die IP-Adresse, auf der das virtuelle Shelly lauscht (Port 80).",
+    "      Die IP muss als Alias auf dem Host-Interface existieren.",
+    "      Im Add-On-Modus erledigt run.sh das automatisch.",
+    "port: Optional, Standard 80. Nur relevant im Standalone-Modus."
+  ],
+
+  "homeassistant": {
+    "url": "http://192.168.178.XXX:8123",
+    "token": "DEIN_LANGLEBIGER_HA_ACCESS_TOKEN"
+  },
+
+  "devices": [
+    {
+      "name": "Waschmaschine",
+      "ip": "192.168.178.10",
+      "entities": {
+        "power":   "sensor.shelly_pm_mini_gen3_waschmaschine_power",
+        "voltage": "sensor.shelly_pm_mini_gen3_waschmaschine_voltage",
+        "current": "sensor.shelly_pm_mini_gen3_waschmaschine_current",
+        "energy":  "sensor.shelly_pm_mini_gen3_waschmaschine_energy"
+      }
+    },
+    {
+      "name": "Trockner",
+      "ip": "192.168.178.11",
+      "entities": {
+        "power":   "sensor.shelly_pm_mini_gen3_trockner_power",
+        "voltage": "sensor.shelly_pm_mini_gen3_trockner_voltage",
+        "current": "sensor.shelly_pm_mini_gen3_trockner_current",
+        "energy":  "sensor.shelly_pm_mini_gen3_trockner_energy"
+      }
+    }
+  ]
+}

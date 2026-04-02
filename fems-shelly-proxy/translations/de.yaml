@@ -1,0 +1,23 @@
+configuration:
+  devices:
+    name: "Geräte"
+    description: "Liste der virtuellen Shelly-Geräte. Jedes Gerät benötigt eine eigene IP-Adresse im LAN."
+    items:
+      name:
+        name: "Gerätename"
+        description: "Name des virtuellen Shelly-Geräts (z.B. Waschmaschine, Trockner)"
+      ip:
+        name: "IP-Adresse"
+        description: "Virtuelle LAN-IP für dieses Gerät (muss außerhalb des DHCP-Bereichs liegen)"
+      entity_power:
+        name: "Leistung (Entity-ID)"
+        description: "HA Entity-ID für die Leistungsmessung in Watt"
+      entity_voltage:
+        name: "Spannung (Entity-ID)"
+        description: "HA Entity-ID für die Spannungsmessung in Volt"
+      entity_current:
+        name: "Strom (Entity-ID)"
+        description: "HA Entity-ID für die Strommessung in Ampere"
+      entity_energy:
+        name: "Energie (Entity-ID)"
+        description: "HA Entity-ID für den kumulierten Energieverbrauch in kWh"

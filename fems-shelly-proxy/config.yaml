@@ -1,0 +1,32 @@
+name: "FEMS Shelly Proxy"
+description: "Emulates Shelly Plug S Gen3 devices for FEMS Shelly DIY by reading sensor data from Home Assistant"
+version: "1.0.0"
+slug: fems-shelly-proxy
+url: "https://github.com/frankhirsch/ha-addon-fems-shelly-proxy"
+arch:
+  - aarch64
+  - amd64
+  - armv7
+  - i386
+homeassistant_api: true
+host_network: true
+privileged:
+  - NET_ADMIN
+options:
+  devices:
+    - name: "My Device"
+      ip: "192.168.178.10"
+      entity_power: "sensor.shelly_power"
+      entity_voltage: "sensor.shelly_voltage"
+      entity_current: "sensor.shelly_current"
+      entity_energy: "sensor.shelly_energy"
+schema:
+  devices:
+    - name: str
+      ip: str
+      entity_power: str
+      entity_voltage: str
+      entity_current: str
+      entity_energy: str
+startup: application
+boot: auto

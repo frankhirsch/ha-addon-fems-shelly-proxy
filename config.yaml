@@ -1,0 +1,46 @@
+name: "FEMS Shelly Proxy"
+description: "Emuliert Shelly Plug S Gen3 Geräte für FEMS Shelly DIY – liest Sensordaten aus Home Assistant"
+version: "1.0.0"
+slug: fems-shelly-proxy
+url: "https://github.com/local/fems-shelly-proxy"
+arch:
+  - aarch64
+  - amd64
+  - armv7
+  - i386
+homeassistant_api: true
+host_network: true
+privileged:
+  - NET_ADMIN
+map:
+  - config:rw
+options:
+  devices:
+    - name: "Waschmaschine"
+      ip: "192.168.178.10"
+      entity_power: "sensor.shellypmminig3_84fce639a9e8_waschmaschine_power"
+      entity_voltage: "sensor.shellypmminig3_84fce639a9e8_waschmaschine_voltage"
+      entity_current: "sensor.shellypmminig3_84fce639a9e8_waschmaschine_current"
+      entity_energy: "sensor.shellypmminig3_84fce639a9e8_waschmaschine_energy"
+    - name: "Trockner"
+      ip: "192.168.178.11"
+      entity_power: "sensor.shellypmminig3_5432045520d8_trockner_power"
+      entity_voltage: "sensor.shellypmminig3_5432045520d8_trockner_voltage"
+      entity_current: "sensor.shellypmminig3_5432045520d8_trockner_current"
+      entity_energy: "sensor.shellypmminig3_5432045520d8_trockner_energy"
+    - name: "Balkonkraftwerk"
+      ip: "192.168.178.12"
+      entity_power: "sensor.balkonkraftwerk_power"
+      entity_voltage: "sensor.balkonkraftwerk_voltage"
+      entity_current: "sensor.balkonkraftwerk_current"
+      entity_energy: "sensor.balkonkraftwerk_yieldtotal"
+schema:
+  devices:
+    - name: str
+      ip: str
+      entity_power: str
+      entity_voltage: str
+      entity_current: str
+      entity_energy: str
+startup: application
+boot: auto
