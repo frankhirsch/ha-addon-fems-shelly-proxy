@@ -7,6 +7,8 @@ so **FEMS Shelly DIY** can integrate devices that are not natively supported
 Each virtual device gets its own IP address on your LAN and responds on port 80
 — FEMS sees a real Shelly Plug S Gen3.
 
+![FEMS Online-Monitoring mit virtuellen Shelly-Geräten](fems-shelly-proxy/img/usage.png)
+
 ## Quick Install
 
 1. In Home Assistant go to **Settings** > **Add-ons** > **Add-on Store**
@@ -20,6 +22,8 @@ Each virtual device gets its own IP address on your LAN and responds on port 80
 6. Start the add-on
 
 Full documentation is available in the add-on's **Documentation** tab after installation.
+
+![Gerätekonfiguration in der HA-UI](fems-shelly-proxy/img/setup.png)
 
 ## How it works
 

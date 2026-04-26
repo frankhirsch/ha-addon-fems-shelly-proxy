@@ -140,7 +140,9 @@ class HAClient:
         try:
             async with session.get(url, timeout=aiohttp.ClientTimeout(total=5)) as r:
                 if r.status != 200:
-                    log.warning("HA returned %s for %s", r.status, entity_id)
+                    # 502/503 = HA Core noch nicht bereit (Startup-Phase) → kein WARNING
+                    log_fn = log.debug if r.status in (502, 503) else log.warning
+                    log_fn("HA returned %s for %s", r.status, entity_id)
                     return None
                 data = await r.json()
                 state = data.get("state")
