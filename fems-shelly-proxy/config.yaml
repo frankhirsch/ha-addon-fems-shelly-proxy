@@ -1,6 +1,6 @@
 name: "FEMS Shelly Proxy"
 description: "Emulates Shelly Plug S Gen3 devices for FEMS Shelly DIY by reading sensor data from Home Assistant"
-version: "1.0.2"
+version: "1.0.2-beta.1"
 slug: fems-shelly-proxy
 url: "https://github.com/frankhirsch/ha-addon-fems-shelly-proxy"
 arch:
