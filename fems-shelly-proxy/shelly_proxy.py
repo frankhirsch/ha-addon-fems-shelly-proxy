@@ -33,11 +33,19 @@ from aiohttp import web
 # ---------------------------------------------------------------------------
 # Logging
 # ---------------------------------------------------------------------------
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-)
+logging.basicConfig(format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
 log = logging.getLogger("shelly-proxy")
+
+
+def setup_logging(level_str: str = "INFO") -> None:
+    level = getattr(logging, level_str.upper(), logging.INFO)
+    logging.getLogger().setLevel(level)
+    # Shelly.GetStatus aus dem aiohttp-Access-Log herausfiltern; bei DEBUG-Level
+    # erscheinen diese Requests über log.debug() im Handler mit Messwerten.
+    class _SkipGetStatus(logging.Filter):
+        def filter(self, record: logging.LogRecord) -> bool:
+            return "Shelly.GetStatus" not in record.getMessage()
+    logging.getLogger("aiohttp.access").addFilter(_SkipGetStatus())
 
 # ---------------------------------------------------------------------------
 # Configuration loader
@@ -73,7 +81,7 @@ def load_config() -> dict:
                     "energy": d.get("entity_energy", ""),
                 },
             })
-        return {"mode": "addon", "devices": devices}
+        return {"mode": "addon", "log_level": opts.get("log_level", "INFO"), "devices": devices}
 
     elif LOCAL_CONFIG_PATH.exists():
         log.info("Lade Konfiguration aus %s (Standalone Modus)", LOCAL_CONFIG_PATH)
@@ -329,6 +337,7 @@ class VirtualShellyPlugS:
 # ---------------------------------------------------------------------------
 async def main():
     cfg = load_config()
+    setup_logging(cfg.get("log_level", "INFO"))
     ha_client = HAClient.from_config(cfg)
 
     runners = []

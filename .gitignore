@@ -1,6 +1,9 @@
 # Secrets
 config.json
 
+# Logs
+LOGS/
+
 # Python
 __pycache__/
 *.pyc

@@ -1,26 +1,31 @@
 #!/bin/sh
-set -e
 
 # ---------------------------------------------------------------------------
 # FEMS Shelly Proxy – Startup Script für HA Add-On
 # ---------------------------------------------------------------------------
-# 1. Ermittelt das aktive Netzwerk-Interface (Default-Route)
+# 1. Ermittelt das aktive Netzwerk-Interface (Default-Route), mit Retry
 # 2. Fügt IP-Aliase für jedes konfigurierte Gerät hinzu
-# 3. Startet den Python-Proxy
+# 3. Startet den Python-Proxy (mit automatischem Neustart bei Absturz)
 # 4. Entfernt IP-Aliase beim Shutdown (SIGTERM)
 # ---------------------------------------------------------------------------
 
 OPTIONS_FILE="/data/options.json"
 
-# --- Netzwerk-Interface automatisch erkennen ---
+# --- Netzwerk-Interface automatisch erkennen (bis zu 10 Versuche à 3 s) ---
 detect_interface() {
-    # Default-Route → aktives Interface
-    iface=$(ip route | grep default | awk '{print $5}' | head -1)
-    if [ -z "$iface" ]; then
-        echo "[ERROR] Kein aktives Netzwerk-Interface gefunden!"
-        exit 1
-    fi
-    echo "$iface"
+    local i=0
+    while [ $i -lt 10 ]; do
+        iface=$(ip route | grep default | awk '{print $5}' | head -1)
+        if [ -n "$iface" ]; then
+            echo "$iface"
+            return 0
+        fi
+        i=$((i + 1))
+        echo "[INFO] Warte auf Netzwerk-Interface (Versuch $i/10)..."
+        sleep 3
+    done
+    echo "[ERROR] Kein aktives Netzwerk-Interface nach 10 Versuchen!"
+    exit 1
 }
 
 # --- Subnetz-Maske vom Interface lesen ---
@@ -80,7 +85,15 @@ remove_ip_aliases() {
 # --- Main ---
 IFACE=$(detect_interface)
 PREFIX=$(detect_prefix_len "$IFACE")
-echo "[INFO] Netzwerk-Interface: $IFACE (Prefix: /$PREFIX)"
+
+# Version aus config.yaml lesen (einzige Quelle der Wahrheit)
+VERSION=$(grep '^version:' /app/config.yaml | sed 's/version:[[:space:]]*"\(.*\)"/\1/' | tr -d '[:space:]')
+VERSION=${VERSION:-unknown}
+
+echo "[INFO] ============================================"
+echo "[INFO] FEMS Shelly Proxy v${VERSION} – Startup"
+echo "[INFO] Interface: $IFACE  Prefix: /$PREFIX"
+echo "[INFO] ============================================"
 
 # Prüfe ob options.json existiert
 if [ ! -f "$OPTIONS_FILE" ]; then
@@ -92,19 +105,24 @@ fi
 add_ip_aliases "$IFACE" "$PREFIX"
 
 # Cleanup bei SIGTERM/SIGINT
+SHUTDOWN_REQUESTED=0
 cleanup() {
+    SHUTDOWN_REQUESTED=1
     remove_ip_aliases "$IFACE" "$PREFIX"
-    # Python-Prozess beenden
     kill "$PROXY_PID" 2>/dev/null || true
     wait "$PROXY_PID" 2>/dev/null || true
     exit 0
 }
 trap cleanup SIGTERM SIGINT
 
-# Proxy starten
-echo "[INFO] Starte Shelly-FEMS-Proxy..."
-python3 -u /app/shelly_proxy.py &
-PROXY_PID=$!
-
-# Warten bis Proxy beendet wird
-wait "$PROXY_PID"
+# Proxy starten – mit automatischem Neustart bei unerwartetem Absturz
+while [ "$SHUTDOWN_REQUESTED" -eq 0 ]; do
+    echo "[INFO] Starte Shelly-FEMS-Proxy..."
+    python3 -u /app/shelly_proxy.py &
+    PROXY_PID=$!
+    wait "$PROXY_PID" || true
+    if [ "$SHUTDOWN_REQUESTED" -eq 0 ]; then
+        echo "[WARN] Proxy unerwartet beendet – Neustart in 5s..."
+        sleep 5
+    fi
+done
