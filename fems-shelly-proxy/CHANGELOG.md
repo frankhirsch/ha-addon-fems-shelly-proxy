@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.0.3 — 2026-04-26
+
+### Fixed
+
+- HA 502/503-Antworten (HA Core noch nicht bereit) werden jetzt auf DEBUG-Level
+  geloggt statt als WARNING — keine Fehlalarme beim Start mehr
+
+### Added
+
+- Screenshots der Konfiguration und des FEMS-Monitorings in README und Dokumentation
+
 ## 1.0.2 — 2026-04-26
 
 ### Fixed

@@ -105,6 +105,8 @@ OpenEMS/FEMS behaviour.
 
 Click **Save** after entering your devices.
 
+![Gerätekonfiguration in der HA-UI](img/setup.png)
+
 ### Step 4: Start the add-on
 
 Start the add-on and check the **Log** tab. You should see:
@@ -139,6 +141,8 @@ curl http://192.168.178.10/rpc/Shelly.GetStatus
    - **Type:** consumption meter or production meter (depending on your device)
 4. FEMS should detect the device as a **Shelly Plug S Gen3**
 5. Repeat for each additional device
+
+![FEMS Online-Monitoring mit virtuellen Shelly-Geräten](img/usage.png)
 
 ## Supported devices
 
